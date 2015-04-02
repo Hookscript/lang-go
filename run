@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./compiled 1>>log 2>>log

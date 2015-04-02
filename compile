@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ -d /gopath ]; then
+    GO_SOURCE=/gopath
+else
+    GO_SOURCE=$( dirname $0 )
+fi
+cp $GO_SOURCE/main.go .
+mv source source.go
+go build -o compiled -i . 2>>log
