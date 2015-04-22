@@ -2,9 +2,7 @@ package main
 
 import "fmt"
 
-type Counter int
-
-func Hook(n *Counter) {
+func Hook(n *int) {
 	*n++
 	fmt.Print(*n)
 }
