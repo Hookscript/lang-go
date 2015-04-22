@@ -27,3 +27,16 @@ example,
 ```go
 func Hook(res *http.Response) { ... }
 ```
+
+## State arguments
+
+Your `Hook` function is allowed to have one pointer argument which is not `*http.Request` or `*http.Response`.  The value to which this argument points is retained across script executions.  Your state argument can be any value which can be serialized by the "encoding/json" package.
+
+For example, if you wanted to remember the time at which your script was previously executed,
+
+```go
+func Hook(t *time.Time) {
+    ...
+    *t = time.Now()
+    ...
+```
