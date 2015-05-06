@@ -12,6 +12,15 @@ import (
 	"runtime"
 )
 
+// our own http.ResponseWriter implementation
+type responseWriter struct {
+	res *http.Response
+}
+
+func (w *responseWriter) Header() http.Header         { return w.res.Header }
+func (w *responseWriter) Write(x []byte) (int, error) { return os.Stdout.Write(x) }
+func (w *responseWriter) WriteHeader(code int)        { w.res.StatusCode = code }
+
 func main() {
 	var state interface{}
 	var stateData []byte
@@ -22,6 +31,7 @@ func main() {
 	// handy reflection types
 	reqType := reflect.TypeOf(&http.Request{})
 	resType := reflect.TypeOf(&http.Response{})
+	reswType := reflect.TypeOf((*http.ResponseWriter)(nil)).Elem()
 
 	// build a closure to execute user's Hook function
 	hook := reflect.ValueOf(Hook)
@@ -32,12 +42,15 @@ func main() {
 		argType := hookType.In(i)
 		switch argType.Kind() {
 		case reflect.Ptr:
+		case reflect.Interface:
 		default:
-			panic("All arguments of Hook() must be pointers")
+			panic("All arguments of Hook() must be pointers or interfaces")
 		}
 
 		var argValue reflect.Value
 		switch argType {
+		case reswType:
+			argValue = reflect.ValueOf(&responseWriter{response})
 		case reqType:
 			argValue = reflect.ValueOf(request)
 		case resType:

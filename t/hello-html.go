@@ -3,20 +3,19 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"os"
 )
 
-func Hook(res *http.Response, req *http.Request) {
+func Hook(w http.ResponseWriter, req *http.Request) {
 	whom := req.FormValue("whom")
 	if whom == "" {
 		whom = "world"
 	}
-	res.Header.Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html")
 	t, err := template.New("page").Parse(page)
 	if err != nil {
 		panic(err)
 	}
-	err = t.Execute(os.Stdout, whom)
+	err = t.Execute(w, whom)
 	if err != nil {
 		panic(err)
 	}
